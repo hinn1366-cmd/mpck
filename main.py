@@ -37,10 +37,10 @@ async def home(request: Request):
         print("Lỗi đọc file CSV:", e)
 
     return templates.TemplateResponse(
+        request, 
         "index.html", 
-        {"request": request, "stats": stats}
+        {"stats": stats}
     )
-
 @app.get("/health")
 async def health():
     return {"status": "ok"}
