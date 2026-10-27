@@ -1,34 +1,25 @@
-/* Khung phân tích và thống kê */
-.analysis-card {
-    background: #1e293b;
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 20px;
-    color: #f8fafc;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.analysis-card h2 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    color: #38bdf8;
-}
-
-.stats-grid {
+/* Các thẻ thông số dạng Dashboard đặt dưới video */
+.cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 15px;
+    margin-top: 20px;
 }
 
-.stat-item {
-    background: #0f172a;
-    padding: 12px 15px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.stat-card {
+    background: #1e293b;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     border-left: 4px solid #38bdf8;
+    text-align: left;
+}
+
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #38bdf8;
+    margin-bottom: 5px;
 }
 
 .stat-label {
@@ -36,28 +27,41 @@
     color: #94a3b8;
 }
 
-.stat-value {
-    font-weight: bold;
-    font-size: 1rem;
-    color: #f8fafc;
+/* Khung chứa biểu đồ phân tích ở dưới cùng */
+.analysis-section {
+    margin-top: 25px;
 }
 
-.stat-value.high {
-    color: #4ade80; /* Màu xanh lá cho giá cao */
+.analysis-section h2 {
+    font-size: 1.2rem;
+    color: #38bdf8;
+    margin-bottom: 15px;
 }
 
-.stat-value.low {
-    color: #f87171; /* Màu đỏ cho giá thấp */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 20px;
 }
 
-.commentary h3 {
-    font-size: 1rem;
-    margin-bottom: 8px;
-    color: #facc15;
+.chart-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    text-align: center;
 }
 
-.commentary p {
+.chart-card h3 {
     font-size: 0.95rem;
-    line-height: 1.5;
-    color: #cbd5e1;
+    color: #f8fafc;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.chart-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    background: #ffffff;
 }

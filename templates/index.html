@@ -15,7 +15,7 @@
         </header>
         
         <main class="main-content">
-            <!-- Khung chứa Video mô phỏng -->
+            <!-- Khung chứa Video mô phỏng ở trên -->
             <section class="video-card">
                 <video controls autoplay loop muted playsinline>
                     <source src="/static/video/mo_phong_chung_khoan.mp4" type="video/mp4">
@@ -23,36 +23,38 @@
                 </video>
             </section>
 
-            <!-- Khung Thống kê & Nhận xét trực quan -->
-            <section class="analysis-card">
-                <h2>📊 Phân tích & Thống kê kỹ thuật (365 phiên)</h2>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">Tổng số phiên:</span>
-                        <span class="stat-value">{{ stats.total_days }} ngày</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Giá đỉnh (Max):</span>
-                        <span class="stat-value high">{{ stats.max_price }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Giá đáy (Min):</span>
-                        <span class="stat-value low">{{ stats.min_price }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Giá trung bình:</span>
-                        <span class="stat-value">{{ stats.avg_price }}</span>
-                    </div>
+            <!-- Các thẻ thông số tổng quan (dạng Dashboard) đặt ngay dưới video -->
+            <section class="cards-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.total_days }}</div>
+                    <div class="stat-label">Tổng số phiên</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.avg_price }}</div>
+                    <div class="stat-label">Giá trung bình</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.max_price }}</div>
+                    <div class="stat-label">Giá đỉnh (Max)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.win_rate }}</div>
+                    <div class="stat-label">Tỉ lệ phiên tăng</div>
+                </div>
+            </section>
 
-                <div class="commentary">
-                    <h3>💡 Nhận xét xu hướng thị trường:</h3>
-                    <p>
-                        Dựa trên mô hình mô phỏng ngẫu nhiên 365 phiên giao dịch, biên độ giá dao động trong khoảng từ 
-                        <strong>{{ stats.min_price }}</strong> đến <strong>{{ stats.max_price }}</strong>. 
-                        Hệ thống áp dụng cơ chế giới hạn biên độ (Sàn/Trần) kết hợp hệ thống mã hóa 5 màu trực quan, 
-                        giúp phản ánh sát thực tế diễn biến tâm lý cung - cầu và xu hướng dịch chuyển dòng tiền trên thị trường chứng khoán cơ sở.
-                    </p>
+            <!-- Khu vực chứa các biểu đồ phân tích kỹ thuật ở dưới cùng -->
+            <section class="analysis-section">
+                <h2>📊 Biểu đồ phân tích kỹ thuật chi tiết</h2>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Phân phối giá đóng cửa</h3>
+                        <img src="/static/chart_distribution.png?v=5" alt="Phân phối giá">
+                    </div>
+                    <div class="chart-card">
+                        <h3>Phân loại xu hướng phiên giao dịch</h3>
+                        <img src="/static/chart_classification.png?v=5" alt="Phân loại phiên">
+                    </div>
                 </div>
             </section>
         </main>
