@@ -38,11 +38,12 @@ try:
             stats["avg_price"] = round(float(np.mean(prices)), 2)
             stats["max_price"] = round(float(np.max(prices)), 2)
             
-            changes = np.diff(prices)
-            win_days = np.sum(changes > 0)
-            stats["win_rate"] = f"{round((win_days / len(changes)) * 100, 2)}%"
+            # Tính toán tỷ lệ phần trăm (%) thay đổi giữa các phiên liên tiếp
+            pct_changes = (np.diff(prices) / prices[:-1]) * 100
+            win_days = np.sum(pct_changes > 0)
+            stats["win_rate"] = f"{round((win_days / len(pct_changes)) * 100, 2)}%"
             
-            # 1. Vẽ biểu đồ phân phối giá
+            # 1. Vẽ biểu đồ phân phối giá đóng cửa
             plt.figure(figsize=(6, 3.8))
             count, bins, ignored = plt.hist(prices, bins=12, edgecolor='black', alpha=0.6, color='#0ea5e9', density=True)
             mu, sigma = np.mean(prices), np.std(prices)
@@ -59,12 +60,12 @@ try:
             plt.savefig("static/chart_distribution.png", dpi=150)
             plt.close()
 
-            # 2. Vẽ biểu đồ phân loại xu hướng
-            tang_manh = np.sum(changes > 2.0)
-            tang = np.sum((changes > 0) & (changes <= 2.0))
-            di_ngang = np.sum(changes == 0)
-            giam = np.sum((changes < 0) & (changes >= -2.0))
-            giam_manh = np.sum(changes < -2.0)
+            # 2. Vẽ biểu đồ phân loại xu hướng theo phần trăm (%)
+            tang_manh = np.sum(pct_changes > 1.0)                  # Tăng trên 1%
+            tang = np.sum((pct_changes > 0) & (pct_changes <= 1.0)) # Tăng từ 0% đến 1%
+            di_ngang = np.sum(pct_changes == 0)                    # Đứng giá (0%)
+            giam = np.sum((pct_changes < 0) & (pct_changes >= -1.0)) # Giảm từ -1% đến 0%
+            giam_manh = np.sum(pct_changes < -1.0)                 # Giảm trên 1%
             
             categories = ['Tăng mạnh', 'Tăng', 'Đi ngang', 'Giảm', 'Giảm mạnh']
             counts = [tang_manh, tang, di_ngang, giam, giam_manh]
@@ -72,7 +73,7 @@ try:
 
             plt.figure(figsize=(6, 3.8))
             plt.bar(categories, counts, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
-            plt.title("Phân loại phiên giao dịch theo biên độ", fontsize=10)
+            plt.title("Phân loại phiên giao dịch theo biên độ (%)", fontsize=10)
             plt.xlabel("Phân loại xu hướng", fontsize=9)
             plt.ylabel("Số phiên", fontsize=9)
             plt.grid(True, linestyle='--', alpha=0.5, axis='y')
