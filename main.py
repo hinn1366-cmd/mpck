@@ -10,83 +10,56 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI(title="Mô phỏng biến động giá chứng khoán")
-
 os.makedirs("static", exist_ok=True)
 os.makedirs("templates", exist_ok=True)
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Khởi tạo giá trị mặc định phòng hờ
-stats = {
-    "total_days": 365,
-    "avg_price": 100.0,
-    "max_price": 120.0,
-    "win_rate": "52.5%"
-}
+# Đọc dữ liệu và tự động sinh 2 biểu đồ khi khởi động
+csv_path = "abc-6.csv"
+if os.path.exists(csv_path):
+    df_raw = pd.read_csv(csv_path, header=None)
+    prices = df_raw.mean(axis=1).values
+    
+    # Tính phần trăm thay đổi để phân loại xu hướng
+    pct_changes = (np.diff(prices) / prices[:-1]) * 100
 
-# Tự động đọc CSV và vẽ biểu đồ ngay khi ứng dụng khởi động
-try:
-    csv_path = "abc-6.csv"
-    if os.path.exists(csv_path):
-        df = pd.read_csv(csv_path)
-        numeric_cols = df.select_dtypes(include='number').columns
-        if len(numeric_cols) > 0:
-            col = numeric_cols[0]
-            prices = df[col].dropna().values
-            stats["total_days"] = len(prices)
-            stats["avg_price"] = round(float(np.mean(prices)), 2)
-            stats["max_price"] = round(float(np.max(prices)), 2)
-            
-            # Tính toán tỷ lệ phần trăm (%) thay đổi giữa các phiên liên tiếp
-            pct_changes = (np.diff(prices) / prices[:-1]) * 100
-            win_days = np.sum(pct_changes > 0)
-            stats["win_rate"] = f"{round((win_days / len(pct_changes)) * 100, 2)}%"
-            
-            # 1. Vẽ biểu đồ phân phối giá đóng cửa
-            plt.figure(figsize=(6, 3.8))
-            count, bins, ignored = plt.hist(prices, bins=12, edgecolor='black', alpha=0.6, color='#0ea5e9', density=True)
-            mu, sigma = np.mean(prices), np.std(prices)
-            if sigma > 0:
-                xmin, xmax = plt.xlim()
-                x = np.linspace(xmin, xmax, 100)
-                p = np.exp(-((x - mu)**2 / (2 * sigma**2))) / (sigma * np.sqrt(2 * np.pi))
-                plt.plot(x, p, 'k-', linewidth=1.5)
-            plt.title("Phân phối giá đóng cửa (365 phiên)", fontsize=10)
-            plt.xlabel("Mức giá", fontsize=9)
-            plt.ylabel("Tần suất", fontsize=9)
-            plt.grid(True, linestyle='--', alpha=0.5)
-            plt.tight_layout()
-            plt.savefig("static/chart_distribution.png", dpi=150)
-            plt.close()
+    # 1. Vẽ biểu đồ 1: Phân phối giá đóng cửa
+    plt.figure(figsize=(7, 4))
+    plt.hist(prices, bins=12, edgecolor='black', alpha=0.7, color='#0ea5e9', density=True)
+    plt.title(f"Phân phối giá đóng cửa ({len(prices)} phiên)", fontsize=11, fontweight='bold')
+    plt.xlabel("Mức giá (VND)")
+    plt.ylabel("Mật độ tần suất")
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.savefig("static/chart_1.png", dpi=150)
+    plt.close()
 
-            # 2. Vẽ biểu đồ phân loại xu hướng theo phần trăm (%)
-            tang_manh = np.sum(pct_changes > 1.0)                  # Tăng trên 1%
-            tang = np.sum((pct_changes > 0) & (pct_changes <= 1.0)) # Tăng từ 0% đến 1%
-            di_ngang = np.sum(pct_changes == 0)                    # Đứng giá (0%)
-            giam = np.sum((pct_changes < 0) & (pct_changes >= -1.0)) # Giảm từ -1% đến 0%
-            giam_manh = np.sum(pct_changes < -1.0)                 # Giảm trên 1%
-            
-            categories = ['Tăng mạnh', 'Tăng', 'Đi ngang', 'Giảm', 'Giảm mạnh']
-            counts = [tang_manh, tang, di_ngang, giam, giam_manh]
-            colors = ['#22c55e', '#86efac', '#eab308', '#fca5a5', '#ef4444']
+    # 2. Vẽ biểu đồ 2: Phân loại xu hướng phiên giao dịch (%)
+    tang_manh = np.sum(pct_changes > 1.0)
+    tang = np.sum((pct_changes > 0) & (pct_changes <= 1.0))
+    di_ngang = np.sum(pct_changes == 0)
+    giam = np.sum((pct_changes < 0) & (pct_changes >= -1.0))
+    giam_manh = np.sum(pct_changes < -1.0)
 
-            plt.figure(figsize=(6, 3.8))
-            plt.bar(categories, counts, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
-            plt.title("Phân loại phiên giao dịch theo biên độ (%)", fontsize=10)
-            plt.xlabel("Phân loại xu hướng", fontsize=9)
-            plt.ylabel("Số phiên", fontsize=9)
-            plt.grid(True, linestyle='--', alpha=0.5, axis='y')
-            plt.tight_layout()
-            plt.savefig("static/chart_classification.png", dpi=150)
-            plt.close()
-except Exception as e:
-    print("Lỗi xử lý dữ liệu hoặc vẽ biểu đồ:", e)
+    categories = ['Tăng mạnh (>1%)', 'Tăng nhẹ', 'Đi ngang', 'Giảm nhẹ', 'Giảm mạnh']
+    counts = [tang_manh, tang, di_ngang, giam, giam_manh]
+    
+    plt.figure(figsize=(7, 4))
+    plt.bar(categories, counts, color=['#22c55e', '#86efac', '#eab308', '#fca5a5', '#ef4444'], edgecolor='black', linewidth=0.5)
+    plt.title("Phân loại xu hướng biến động giữa các phiên", fontsize=11, fontweight='bold')
+    plt.xlabel("Nhóm biên độ")
+    plt.ylabel("Số lượng phiên")
+    plt.grid(True, linestyle='--', alpha=0.5, axis='y')
+    plt.tight_layout()
+    plt.savefig("static/chart_2.png", dpi=150)
+    plt.close()
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse(request, "index.html", {"stats": stats})
-
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
+    # Truyền nội dung nhận xét trực tiếp ra web
+    comments = {
+        "cmt_1": "Biểu đồ phân phối giá phản ánh mật độ tập trung của mức giá cổ phiếu trong suốt chu kỳ năm. Phần lớn các phiên giao dịch tập trung ở vùng giá trung tâm, cho thấy sự ổn định tương đối trước khi có những nhịp bứt phá hoặc sụt giảm mạnh về phía đuôi phân phối.",
+        "cmt_2": "Biểu đồ phân loại xu hướng cho thấy tỷ trọng phân bổ giữa các phiên tăng và giảm giá. Các phiên tăng/giảm nhẹ chiếm đa số, thể hiện thị trường vận động bám sát cung cầu tự nhiên, trong khi các phiên biến động mạnh (>1% hoặc <-1%) đánh dấu các thời điểm dòng tiền lớn hoặc thông tin tác động đột biến."
+    }
+    return templates.TemplateResponse(request, "index.html", {"comments": comments})S

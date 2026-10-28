@@ -1,0 +1,80 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+# 1. Đọc dữ liệu từ file abc-6.csv
+df_raw = pd.read_csv("abc-6.csv", header=None)
+
+# Tạo chuỗi ngày làm việc trong năm tương ứng với số phiên giao dịch
+dates = pd.date_range(start="2024-01-01", periods=len(df_raw), freq="B")
+df = df_raw.copy()
+df.insert(0, "Date", dates)
+df["Month"] = df["Date"].dt.month
+
+# Tính giá trung bình của mỗi phiên giao dịch trong ngày
+df["Daily_Mean"] = df_raw.mean(axis=1)
+
+# 2. In ra bảng giá trung bình và độ biến động (độ lệch chuẩn) của mỗi tháng
+monthly_stats = (
+    df.groupby("Month")["Daily_Mean"]
+    .agg(Gia_Trung_Binh="mean", Do_Lech_Chuan="std")
+    .round(2)
+)
+
+print("=== BẢNG GIÁ TRUNG BÌNH VÀ ĐỘ BIẾN ĐỘNG (ĐỘ LỆCH CHUẨN) THEO THÁNG ===")
+print(monthly_stats)
+
+# 3. Xác định tháng có biên độ dao động mạnh nhất (Max - Min)
+monthly_range = df.groupby("Month")["Daily_Mean"].agg(
+    lambda x: x.max() - x.min()
+)
+max_month = monthly_range.idxmax()
+print(
+    f"\n=> Tháng có biên độ giá dao động mạnh nhất là: Tháng {max_month}"
+    f" (Biên độ Max - Min: {monthly_range[max_month]:.2f})"
+)
+
+# 4. Vẽ biểu đồ cột biểu diễn giá trung bình của mỗi tháng
+plt.figure(figsize=(8, 4))
+monthly_stats["Gia_Trung_Binh"].plot(
+    kind="bar", color="#0ea5e9", edgecolor="black", alpha=0.85
+)
+plt.title(
+    "Biểu đồ cột: Giá trung bình của các tháng trong năm",
+    fontsize=11,
+    fontweight="bold",
+)
+plt.xlabel("Tháng", fontsize=10)
+plt.ylabel("Giá trung bình (VND)", fontsize=10)
+plt.grid(True, linestyle="--", alpha=0.5, axis="y")
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.savefig("chart_monthly_mean.png", dpi=150)
+plt.show()
+
+# 5. Vẽ biểu đồ hộp (Boxplot) về giá của mỗi tháng
+plt.figure(figsize=(10, 5))
+df_melted = df_raw.copy()
+df_melted["Month"] = dates.month
+df_long = df_melted.melt(
+    id_vars=["Month"],
+    value_vars=df_raw.columns,
+    var_name="Price_Point",
+    value_name="Price",
+)
+
+sns.boxplot(
+    x="Month", y="Price", data=df_long, palette="Set2", showmeans=True
+)
+plt.title(
+    "Biểu đồ hộp (Boxplot) phân phối giá theo từng tháng",
+    fontsize=11,
+    fontweight="bold",
+)
+plt.xlabel("Tháng", fontsize=10)
+plt.ylabel("Mức giá (VND)", fontsize=10)
+plt.grid(True, linestyle="--", alpha=0.5)
+plt.tight_layout()
+plt.savefig("chart_monthly_boxplot.png", dpi=150)
+plt.show()

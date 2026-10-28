@@ -2,66 +2,53 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô phỏng biến động giá của một mã chứng khoán</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Mô phỏng Biến động Giá Chứng khoán</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; color: #334155; }
+        .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: #0f172a; margin-bottom: 25px; }
+        .video-section { text-align: center; margin-bottom: 40px; background: #f1f5f9; padding: 20px; border-radius: 8px; }
+        video { width: 100%; max-width: 800px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+        .chart-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .chart-card img { width: 100%; height: auto; border-radius: 4px; }
+        .chart-card h3 { font-size: 16px; color: #1e293b; margin-top: 10px; margin-bottom: 8px; }
+        .chart-card p { font-size: 14px; line-height: 1.5; color: #475569; text-align: justify; }
+        @media(max-width: 768px) { .charts-section { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <p class="eyebrow">ĐỒ ÁN MÔ PHỎNG THỊ TRƯỜNG CHỨNG KHOÁN</p>
-            <h1>Mô phỏng biến động giá của một mã chứng khoán</h1>
-            <p class="subtitle">Quan sát trực quan 365 ngày giao dịch nội phiên (Sàn, Trần, Tham chiếu, Đóng cửa)</p>
-        </header>
-        
-        <main class="main-content">
-            <!-- Khung chứa Video mô phỏng ở trên -->
-            <section class="video-card">
-                <video controls autoplay loop muted playsinline>
-                    <source src="/static/video/mo_phong_chung_khoan.mp4" type="video/mp4">
-                    Trình duyệt của bạn không hỗ trợ thẻ video.
-                </video>
-            </section>
+        <h1>Hệ thống Mô phỏng & Phân tích Chứng khoán</h1>
 
-            <!-- Các thẻ thông số tổng quan (dạng Dashboard) đặt ngay dưới video -->
-            <section class="cards-grid">
-                <div class="stat-card">
-                    <div class="stat-value">{{ stats.total_days }}</div>
-                    <div class="stat-label">Tổng số phiên</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ stats.avg_price }}</div>
-                    <div class="stat-label">Giá trung bình</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ stats.max_price }}</div>
-                    <div class="stat-label">Giá đỉnh (Max)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ stats.win_rate }}</div>
-                    <div class="stat-label">Tỉ lệ phiên tăng</div>
-                </div>
-            </section>
+        <!-- PHẦN 1: VIDEO MÔ PHỎNG (TRỌNG TÂM BAN ĐẦU) -->
+        <div class="video-section">
+            <h2>Video Mô Phỏng Diễn Biến Thị Trường</h2>
+            <video controls autoplay muted loop>
+                <source src="/static/mo_phong_chung_khoan.mp4" type="video/mp4">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+        </div>
 
-            <!-- Khu vực chứa các biểu đồ phân tích kỹ thuật ở dưới cùng -->
-            <section class="analysis-section">
-                <h2>📊 Biểu đồ phân tích kỹ thuật chi tiết</h2>
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <h3>Phân phối giá đóng cửa</h3>
-                        <img src="/static/chart_distribution.png?v=5" alt="Phân phối giá">
-                    </div>
-                    <div class="chart-card">
-                        <h3>Phân loại xu hướng phiên giao dịch</h3>
-                        <img src="/static/chart_classification.png?v=5" alt="Phân loại phiên">
-                    </div>
-                </div>
-            </section>
-        </main>
-        
-        <footer class="footer">
-            <p>Đồ án môn học | Python, FastAPI & Matplotlib</p>
-        </footer>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+
+        <!-- PHẦN 2: 2 BIỂU ĐỒ VÀ NHẬN XÉT -->
+        <h2>Phân tích Chuyên Suyên & Đồ Thị Kỹ Thuật</h2>
+        <div class="charts-section">
+            <!-- Biểu đồ 1 -->
+            <div class="chart-card">
+                <img src="/static/chart_1.png" alt="Biểu đồ phân phối giá">
+                <h3>1. Phân phối giá đóng cửa</h3>
+                <p>{{ comments.cmt_1 }}</p>
+            </div>
+
+            <!-- Biểu đồ 2 -->
+            <div class="chart-card">
+                <img src="/static/chart_2.png" alt="Biểu đồ phân loại xu hướng">
+                <h3>2. Phân loại xu hướng phiên giao dịch</h3>
+                <p>{{ comments.cmt_2 }}</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
