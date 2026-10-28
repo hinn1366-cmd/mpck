@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Mô phỏng & Phân tích Biến động Giá Chứng khoán</title>
+    <title>Mô phỏng biến động giá của một mã chứng khoán.</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; color: #334155; }
         .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -19,11 +19,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Hệ thống Mô phỏng & Phân tích Chứng khoán</h1>
+        <h1>Mô phỏng biến động giá của một mã chứng khoán.</h1>
 
-        <!-- VIDEO MÔ PHỎNG TRỰC QUAN -->
+        
         <div class="video-section">
-            <h2>Video Mô Phỏng Diễn Biến Thị Trường</h2>
+            <h2>Video Mô Phỏng </h2>
             <video controls autoplay muted loop>
                 <source src="/static/mo_phong_chung_khoan.mp4" type="video/mp4">
                 Trình duyệt của bạn không hỗ trợ thẻ video.
@@ -32,17 +32,14 @@
 
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
 
-        <!-- 2 BIỂU ĐỒ THỐNG KÊ CÂU 1 (MỤC 5) KÈM NHẬN XÉT -->
+    
         <h2>Phân tích Thống kê theo Tháng (Câu 1)</h2>
         <div class="charts-section">
-            <!-- Biểu đồ 1: Cột giá trung bình tháng -->
             <div class="chart-card">
                 <img src="/static/chart_monthly_mean.png" alt="Biểu đồ cột giá trung bình tháng">
                 <h3>1. Giá trung bình mỗi tháng</h3>
                 <p>{{ comments.cmt_mean }}</p>
             </div>
-
-            <!-- Biểu đồ 2: Boxplot theo tháng -->
             <div class="chart-card">
                 <img src="/static/chart_monthly_boxplot.png" alt="Biểu đồ Boxplot phân phối giá theo tháng">
                 <h3>2. Phân phối giá (Boxplot) theo tháng</h3>

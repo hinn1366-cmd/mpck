@@ -1,6 +1,6 @@
 import os
 import matplotlib
-matplotlib.use('Agg') # Ép Matplotlib chạy ngầm không cần màn hình
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -71,7 +71,7 @@ if os.path.exists(csv_path):
     except Exception as e:
         print(f"Lỗi xử lý biểu đồ Câu 1: {e}")
 
-# Định tuyến trang chủ hiển thị Video + 2 biểu đồ Câu 1 kèm nhận xét
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
