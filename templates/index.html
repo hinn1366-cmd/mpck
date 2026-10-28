@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Mô phỏng Biến động Giá Chứng khoán</title>
+    <title>Mô phỏng & Phân tích Biến động Giá Chứng khoán</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; color: #334155; }
         .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -21,7 +21,7 @@
     <div class="container">
         <h1>Hệ thống Mô phỏng & Phân tích Chứng khoán</h1>
 
-        <!-- PHẦN 1: VIDEO MÔ PHỎNG (TRỌNG TÂM BAN ĐẦU) -->
+        <!-- VIDEO MÔ PHỎNG TRỰC QUAN -->
         <div class="video-section">
             <h2>Video Mô Phỏng Diễn Biến Thị Trường</h2>
             <video controls autoplay muted loop>
@@ -32,21 +32,21 @@
 
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
 
-        <!-- PHẦN 2: 2 BIỂU ĐỒ VÀ NHẬN XÉT -->
-        <h2>Phân tích Chuyên Suyên & Đồ Thị Kỹ Thuật</h2>
+        <!-- 2 BIỂU ĐỒ THỐNG KÊ CÂU 1 (MỤC 5) KÈM NHẬN XÉT -->
+        <h2>Phân tích Thống kê theo Tháng (Câu 1)</h2>
         <div class="charts-section">
-            <!-- Biểu đồ 1 -->
+            <!-- Biểu đồ 1: Cột giá trung bình tháng -->
             <div class="chart-card">
-                <img src="/static/chart_1.png" alt="Biểu đồ phân phối giá">
-                <h3>1. Phân phối giá đóng cửa</h3>
-                <p>{{ comments.cmt_1 }}</p>
+                <img src="/static/chart_monthly_mean.png" alt="Biểu đồ cột giá trung bình tháng">
+                <h3>1. Giá trung bình mỗi tháng</h3>
+                <p>{{ comments.cmt_mean }}</p>
             </div>
 
-            <!-- Biểu đồ 2 -->
+            <!-- Biểu đồ 2: Boxplot theo tháng -->
             <div class="chart-card">
-                <img src="/static/chart_2.png" alt="Biểu đồ phân loại xu hướng">
-                <h3>2. Phân loại xu hướng phiên giao dịch</h3>
-                <p>{{ comments.cmt_2 }}</p>
+                <img src="/static/chart_monthly_boxplot.png" alt="Biểu đồ Boxplot phân phối giá theo tháng">
+                <h3>2. Phân phối giá (Boxplot) theo tháng</h3>
+                <p>{{ comments.cmt_boxplot }}</p>
             </div>
         </div>
     </div>

@@ -1,65 +1,83 @@
 import os
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg') # Ép Matplotlib chạy ngầm không cần màn hình
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-app = FastAPI(title="Mô phỏng biến động giá chứng khoán")
+# Khởi tạo FastAPI
+app = FastAPI(title="Phân tích biến động giá chứng khoán theo tháng")
+
 os.makedirs("static", exist_ok=True)
 os.makedirs("templates", exist_ok=True)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Đọc dữ liệu và tự động sinh 2 biểu đồ khi khởi động
+# Nội dung nhận xét ngắn gọn cho 2 biểu đồ Câu 1
+comments = {
+    "cmt_mean": "Biểu đồ cột phản ánh giá trung bình qua các tháng, giúp nhận diện nhanh chóng chu kỳ tăng giảm và xu thế dịch chuyển của dòng tiền trong năm.",
+    "cmt_boxplot": "Biểu đồ hộp (Boxplot) thể hiện độ phân tán và khoảng tứ phân vị của giá theo từng tháng. Râu hộp kéo dài và các điểm ngoại lệ cho thấy những phiên có biến động mạnh."
+}
+
+# Đọc dữ liệu và tự động vẽ 2 biểu đồ Câu 1 khi khởi động
 csv_path = "abc-6.csv"
 if os.path.exists(csv_path):
-    df_raw = pd.read_csv(csv_path, header=None)
-    prices = df_raw.mean(axis=1).values
-    
-    # Tính phần trăm thay đổi để phân loại xu hướng
-    pct_changes = (np.diff(prices) / prices[:-1]) * 100
+    try:
+        df_raw = pd.read_csv(csv_path, header=None)
+        dates = pd.date_range(start="2024-01-01", periods=len(df_raw), freq="B")
+        df = df_raw.copy()
+        df.insert(0, "Date", dates)
+        df["Month"] = df["Date"].dt.month
+        df["Daily_Mean"] = df_raw.mean(axis=1)
 
-    # 1. Vẽ biểu đồ 1: Phân phối giá đóng cửa
-    plt.figure(figsize=(7, 4))
-    plt.hist(prices, bins=12, edgecolor='black', alpha=0.7, color='#0ea5e9', density=True)
-    plt.title(f"Phân phối giá đóng cửa ({len(prices)} phiên)", fontsize=11, fontweight='bold')
-    plt.xlabel("Mức giá (VND)")
-    plt.ylabel("Mật độ tần suất")
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout()
-    plt.savefig("static/chart_1.png", dpi=150)
-    plt.close()
+        # Tính toán giá trung bình theo tháng
+        monthly_stats = df.groupby("Month")["Daily_Mean"].agg(
+            Gia_Trung_Binh="mean", Do_Lech_Chuan="std"
+        ).round(2)
 
-    # 2. Vẽ biểu đồ 2: Phân loại xu hướng phiên giao dịch (%)
-    tang_manh = np.sum(pct_changes > 1.0)
-    tang = np.sum((pct_changes > 0) & (pct_changes <= 1.0))
-    di_ngang = np.sum(pct_changes == 0)
-    giam = np.sum((pct_changes < 0) & (pct_changes >= -1.0))
-    giam_manh = np.sum(pct_changes < -1.0)
+        # --- BIỂU ĐỒ 1: Biểu đồ cột giá trung bình mỗi tháng ---
+        plt.figure(figsize=(7, 4))
+        monthly_stats["Gia_Trung_Binh"].plot(kind="bar", color="#0ea5e9", edgecolor="black", alpha=0.85)
+        plt.title("Gia trung binh cac thang trong nam", fontsize=11, fontweight="bold")
+        plt.xlabel("Thang", fontsize=10)
+        plt.ylabel("Gia trung binh (VND)", fontsize=10)
+        plt.grid(True, linestyle="--", alpha=0.5, axis="y")
+        plt.xticks(rotation=0)
+        plt.tight_layout()
+        plt.savefig("static/chart_monthly_mean.png", dpi=150)
+        plt.close()
 
-    categories = ['Tăng mạnh (>1%)', 'Tăng nhẹ', 'Đi ngang', 'Giảm nhẹ', 'Giảm mạnh']
-    counts = [tang_manh, tang, di_ngang, giam, giam_manh]
-    
-    plt.figure(figsize=(7, 4))
-    plt.bar(categories, counts, color=['#22c55e', '#86efac', '#eab308', '#fca5a5', '#ef4444'], edgecolor='black', linewidth=0.5)
-    plt.title("Phân loại xu hướng biến động giữa các phiên", fontsize=11, fontweight='bold')
-    plt.xlabel("Nhóm biên độ")
-    plt.ylabel("Số lượng phiên")
-    plt.grid(True, linestyle='--', alpha=0.5, axis='y')
-    plt.tight_layout()
-    plt.savefig("static/chart_2.png", dpi=150)
-    plt.close()
+        # --- BIỂU ĐỒ 2: Biểu đồ hộp (Boxplot) theo tháng ---
+        plt.figure(figsize=(8, 4))
+        df_melted = df_raw.copy()
+        df_melted["Month"] = dates.month
+        df_long = df_melted.melt(id_vars=["Month"], value_vars=df_raw.columns, var_name="Price_Point", value_name="Price")
+        
+        sns.boxplot(x="Month", y="Price", data=df_long, palette="Set2", showmeans=True)
+        plt.title("Boxplot phan phoi gia theo tung thang", fontsize=11, fontweight="bold")
+        plt.xlabel("Thang", fontsize=10)
+        plt.ylabel("Muc gia (VND)", fontsize=10)
+        plt.grid(True, linestyle="--", alpha=0.5)
+        plt.tight_layout()
+        plt.savefig("static/chart_monthly_boxplot.png", dpi=150)
+        plt.close()
 
+    except Exception as e:
+        print(f"Lỗi xử lý biểu đồ Câu 1: {e}")
+
+# Định tuyến trang chủ hiển thị Video + 2 biểu đồ Câu 1 kèm nhận xét
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    # Truyền nội dung nhận xét trực tiếp ra web
-    comments = {
-        "cmt_1": "Biểu đồ phân phối giá phản ánh mật độ tập trung của mức giá cổ phiếu trong suốt chu kỳ năm. Phần lớn các phiên giao dịch tập trung ở vùng giá trung tâm, cho thấy sự ổn định tương đối trước khi có những nhịp bứt phá hoặc sụt giảm mạnh về phía đuôi phân phối.",
-        "cmt_2": "Biểu đồ phân loại xu hướng cho thấy tỷ trọng phân bổ giữa các phiên tăng và giảm giá. Các phiên tăng/giảm nhẹ chiếm đa số, thể hiện thị trường vận động bám sát cung cầu tự nhiên, trong khi các phiên biến động mạnh (>1% hoặc <-1%) đánh dấu các thời điểm dòng tiền lớn hoặc thông tin tác động đột biến."
-    }
-    return templates.TemplateResponse(request, "index.html", {"comments": comments})
+    return templates.TemplateResponse(
+        request, 
+        "index.html", 
+        {
+            "comments": comments
+        }
+    )
