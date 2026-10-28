@@ -62,4 +62,4 @@ async def home(request: Request):
         "cmt_1": "Biểu đồ phân phối giá phản ánh mật độ tập trung của mức giá cổ phiếu trong suốt chu kỳ năm. Phần lớn các phiên giao dịch tập trung ở vùng giá trung tâm, cho thấy sự ổn định tương đối trước khi có những nhịp bứt phá hoặc sụt giảm mạnh về phía đuôi phân phối.",
         "cmt_2": "Biểu đồ phân loại xu hướng cho thấy tỷ trọng phân bổ giữa các phiên tăng và giảm giá. Các phiên tăng/giảm nhẹ chiếm đa số, thể hiện thị trường vận động bám sát cung cầu tự nhiên, trong khi các phiên biến động mạnh (>1% hoặc <-1%) đánh dấu các thời điểm dòng tiền lớn hoặc thông tin tác động đột biến."
     }
-    return templates.TemplateResponse(request, "index.html", {"comments": comments})S
+    return templates.TemplateResponse(request, "index.html", {"comments": comments})
